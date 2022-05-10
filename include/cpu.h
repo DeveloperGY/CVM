@@ -13,9 +13,14 @@ struct CPU
 	int reg_1;
 	int reg_2;
 	int reg_3;
+
+	struct INSArr *ins;
+	struct MEM *mem;
 };
 
 struct CPU *genCPU(long, long);
+void destroyCPU(struct CPU *);
 
+void setCurrentCPU(struct CPU *);
 
 #endif

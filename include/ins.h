@@ -1,6 +1,9 @@
 #ifndef INS_H
 #define INS_H
 
+#include <stdio.h>
+#include <stdlib.h>
+
 enum INS
 {
 	NOP, // No Operation
@@ -31,7 +34,22 @@ enum INS
 	CMP, // Compare Registers (subtract)
 	CPI, // Compare Immediate (subtract)
 	CMN, // Compare Registers (addition)
-	CNI  // Compare Immediate (addition)
+	CNI, // Compare Immediate (addition)
+
+	R_0, // Register 0
+	R_1, // Register 1
+	R_2, // Register 2
+	R_3  // Register 3
 };
+
+struct INSArr
+{
+	enum INS *ins;
+	long size;
+	long ins_ptr;
+};
+
+struct INSArr *genINS(long);
+void destroyINS(struct INSArr *);
 
 #endif
