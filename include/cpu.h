@@ -7,6 +7,6 @@ struct CPU
 	int reg_1;
 	int reg_2;
 	int reg_3;
-}
+};
 
 #endif
