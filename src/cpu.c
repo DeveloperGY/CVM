@@ -42,3 +42,42 @@ void setCurrentCPU(struct CPU *cpu)
 	currentCPU = cpu;
 	return;
 }
+
+enum INS fetch()
+{
+	if (currentCPU == NULL)
+	{
+		return NOP;
+	}
+
+	if (currentCPU->ins->ins_ptr >= currentCPU->ins->size)
+	{
+		return NOP;
+	}
+	
+	enum INS instruction = currentCPU->ins->ins[currentCPU->ins->ins_ptr];
+	currentCPU->ins->ins_ptr++;
+
+	return instruction;
+}
+
+void execute(enum INS instruction)
+{
+	if (currentCPU == NULL)
+	{
+		printf("Runtime Error: NO activated VCPU!\n");
+		return;
+	}
+
+	switch (instruction)
+	{
+		// 24 operations
+
+		case ADD:
+		{
+			break;
+		}
+	}
+
+	return;
+}

@@ -23,4 +23,8 @@ void destroyCPU(struct CPU *);
 
 void setCurrentCPU(struct CPU *);
 
+enum INS fetch();
+void execute(enum INS);
+void verror();
+
 #endif
