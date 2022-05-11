@@ -16,6 +16,8 @@ struct CPU
 
 	struct INSArr *ins;
 	struct MEM *mem;
+
+	char error;
 };
 
 struct CPU *genCPU(long, long);
@@ -23,8 +25,10 @@ void destroyCPU(struct CPU *);
 
 void setCurrentCPU(struct CPU *);
 
+
+int *getReg(enum INS);
 enum INS fetch();
 void execute(enum INS);
-void verror();
+void verror(char *);
 
 #endif

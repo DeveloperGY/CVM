@@ -22,8 +22,7 @@ enum INS
 	LDI, // Load Immediate
 	STR, // Store Register
 	STI, // Store Immediate
-	CPy, // Copy Register
-
+	CPY, // Copy Register
 
 	JMP, // Jump to instruction
 	JNZ, // Jump if not Zero
