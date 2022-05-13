@@ -27,6 +27,7 @@ void setCurrentCPU(struct CPU *);
 
 
 int *getReg(enum INS);
+int *getMem();
 enum INS fetch();
 void execute(enum INS);
 void verror(char *);

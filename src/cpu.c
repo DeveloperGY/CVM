@@ -100,6 +100,16 @@ int *getReg(enum INS ins)
 	}
 }
 
+int *getMem()
+{
+	if (currentCPU == NULL)
+	{
+		return NULL;
+	}
+
+	return &(currentCPU->mem->mem[currentCPU->mem->mem_ptr]);
+}
+
 void add();
 void add();
 void sub();
@@ -108,6 +118,8 @@ void mlt();
 void mti();
 void divide();
 void dvi();
+
+void lod();
 
 void execute(enum INS instruction)
 {
@@ -166,6 +178,12 @@ void execute(enum INS instruction)
 		case DVI:
 		{
 			dvi();
+			break;
+		}
+
+		case LOD:
+		{
+			lod();
 			break;
 		}
 	}
@@ -306,5 +324,21 @@ void dvi()
 
 	(*result) = (*reg_a) / immediate;
 
+	return;
+}
+
+void lod()
+{
+	int* target = getReg(fetch());
+
+	if (target == NULL)
+	{
+		verror("Runtime Error: Failed to load register, register not found!");
+		return;
+	}
+
+	currentCPU->mem->mem_ptr = *getReg(R_0);
+
+	(*target) = *getMem();
 	return;
 }
