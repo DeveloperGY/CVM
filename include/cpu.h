@@ -31,7 +31,6 @@ void destroyCPU(struct CPU *);
 
 void setCurrentCPU(struct CPU *);
 
-
 int *getReg(enum INS);
 int *getMem();
 enum INS fetch();
