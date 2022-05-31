@@ -145,6 +145,12 @@ void ldi();
 void str();
 void cpy();
 
+void jmp();
+void jnz();
+void jez();
+void jgz();
+void jlz();
+
 void execute(enum INS instruction)
 {
 	if (currentCPU == NULL)
@@ -226,6 +232,36 @@ void execute(enum INS instruction)
 		case CPY:
 		{
 			cpy();
+			break;
+		}
+
+		case JMP:
+		{
+			jmp();
+			break;
+		}
+
+		case JNZ:
+		{
+			jnz();
+			break;
+		}
+
+		case JEZ:
+		{
+			jez();
+			break;
+		}
+
+		case JGZ:
+		{
+			jgz();
+			break;
+		}
+
+		case JLZ:
+		{
+			jlz();
 			break;
 		}
 	}
@@ -460,6 +496,55 @@ void cpy()
 	(*target) = (*sender);
 
 	setFlags(*target);
+
+	return;
+}
+
+void jmp()
+{
+	int *target = getReg(R_0);
+
+	currentCPU->ins->ins_ptr = (*target);
+
+	return;
+}
+
+void jnz()
+{
+	int *target = getReg(R_0);
+
+	if (!currentCPU->zero)
+		currentCPU->ins->ins_ptr = (*target);
+
+	return;
+}
+
+void jez()
+{
+	int *target = getReg(R_0);
+
+	if (currentCPU->zero)
+		currentCPU->ins->ins_ptr = (*target);
+
+	return;
+}
+
+void jgz()
+{
+	int *target = getReg(R_0);
+
+	if (!currentCPU->negative && !currentCPU->zero)
+		currentCPU->ins->ins_ptr = (*target);
+
+	return;
+}
+
+void jlz()
+{
+	int *target = getReg(R_0);
+
+	if (currentCPU->negative)
+		currentCPU->ins->ins_ptr = (*target);
 
 	return;
 }
