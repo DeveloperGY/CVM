@@ -151,6 +151,11 @@ void jez();
 void jgz();
 void jlz();
 
+void cmp();
+void cpi();
+void cmn();
+void cni();
+
 void execute(enum INS instruction)
 {
 	if (currentCPU == NULL)
@@ -262,6 +267,30 @@ void execute(enum INS instruction)
 		case JLZ:
 		{
 			jlz();
+			break;
+		}
+
+		case CMP:
+		{
+			cmp();
+			break;
+		}
+
+		case CPI:
+		{
+			cpi();
+			break;
+		}
+
+		case CMN:
+		{
+			cmn();
+			break;
+		}
+
+		case CNI:
+		{
+			cni();
 			break;
 		}
 	}
@@ -506,6 +535,8 @@ void jmp()
 
 	currentCPU->ins->ins_ptr = (*target);
 
+	setFlags(0);
+
 	return;
 }
 
@@ -515,6 +546,8 @@ void jnz()
 
 	if (!currentCPU->zero)
 		currentCPU->ins->ins_ptr = (*target);
+
+	setFlags(0);
 
 	return;
 }
@@ -526,6 +559,8 @@ void jez()
 	if (currentCPU->zero)
 		currentCPU->ins->ins_ptr = (*target);
 
+	setFlags(0);
+
 	return;
 }
 
@@ -536,6 +571,8 @@ void jgz()
 	if (!currentCPU->negative && !currentCPU->zero)
 		currentCPU->ins->ins_ptr = (*target);
 
+	setFlags(0);
+
 	return;
 }
 
@@ -545,6 +582,84 @@ void jlz()
 
 	if (currentCPU->negative)
 		currentCPU->ins->ins_ptr = (*target);
+
+	setFlags(0);
+
+	return;
+}
+
+void cmp()
+{
+	int *op_0 = getReg(fetch());
+	int *op_1 = getReg(fetch());
+
+	if (op_0 == NULL)
+	{
+		verror("Runtime Error: Failed to compare registers, first register invalid!");
+		return;
+	}
+
+	if (op_1 == NULL)
+	{
+		verror("Runtime Error: Failed to compare registers, second register invalid!");
+		return;
+	}
+
+	setFlags((*op_0) - (*op_1));
+
+	return;
+}
+
+void cpi()
+{
+	int *op_0 = getReg(fetch());
+	int op_1 = fetch();
+
+	if (op_0 == NULL)
+	{
+		verror("Runtime Error: Failed to compare immediate, first register invalid!");
+		return;
+	}
+
+	setFlags((*op_0) - op_1);
+
+	return;
+}
+
+void cmn()
+{
+	int *op_0 = getReg(fetch());
+	int *op_1 = getReg(fetch());
+
+	if (op_0 == NULL)
+	{
+		verror("Runtime Error: Failed to compare negative registers, first register invalid!");
+		return;
+	}
+
+	if (op_1 == NULL)
+	{
+		verror("Runtime Error: Failed to compare negative registers, second register invalid!");
+		return;
+	}
+
+	setFlags((*op_0) + (*op_1));
+
+	return;
+}
+
+void cni()
+{
+	int *op_0 = getReg(fetch());
+	int op_1 = fetch();
+
+	if (op_0 == NULL)
+	{
+		verror("Runtime Error: Failed to compare negative immediate, first register invalid!");
+		return;
+	}
+
+	setFlags((*op_0) + op_1);
 
 	return;
 }
