@@ -17,7 +17,9 @@ struct CPU *genCPU(long ins_size, long ram_size)
 	cpu->reg_2 = 0;
 	cpu->reg_3 = 0;
 
-	cpu->error = 0;
+	cpu->error = FALSE;
+	cpu->zero = TRUE;
+	cpu->negative = FALSE;
 
 	cpu->ins = genINS(ins_size);
 	cpu->mem = genMEM(ram_size);
@@ -63,7 +65,7 @@ enum INS fetch()
 	return instruction;
 }
 
-void verror(char *msg)
+void verror(const char *msg)
 {
 	if (currentCPU == NULL)
 	{
@@ -110,8 +112,27 @@ int *getMem()
 	return &(currentCPU->mem->mem[currentCPU->mem->mem_ptr]);
 }
 
+void setFlags(int num)
+{
+	if (currentCPU == NULL)
+	{
+		return;
+	}
+
+	if (num == 0)
+	{
+		currentCPU->zero = TRUE;
+		currentCPU->negative = FALSE;
+	}
+	else
+	{
+		currentCPU->zero = FALSE;
+		currentCPU->negative = !(num >= 0);
+	}
+}
+
 void add();
-void add();
+void adi();
 void sub();
 void sbi();
 void mlt();
@@ -120,6 +141,9 @@ void divide();
 void dvi();
 
 void lod();
+void ldi();
+void str();
+void cpy();
 
 void execute(enum INS instruction)
 {
@@ -131,7 +155,7 @@ void execute(enum INS instruction)
 
 	switch (instruction)
 	{
-		// 24 operations
+		// 23 operations
 
 		case ADD:
 		{
@@ -186,6 +210,24 @@ void execute(enum INS instruction)
 			lod();
 			break;
 		}
+
+		case LDI:
+		{
+			ldi();
+			break;
+		}
+
+		case STR:
+		{
+			str();
+			break;
+		}
+
+		case CPY:
+		{
+			cpy();
+			break;
+		}
 	}
 
 	return;
@@ -205,6 +247,8 @@ void add()
 
 	(*result) = (*reg_a) + (*reg_b);
 
+	setFlags(*result);
+
 	return;
 }
 
@@ -221,6 +265,8 @@ void adi()
 	}
 
 	(*result) = (*reg_a) + immediate;
+
+	setFlags(*result);
 
 	return;
 }
@@ -239,6 +285,8 @@ void sub()
 
 	(*result) = (*reg_a) - (*reg_b);
 
+	setFlags(*result);
+
 	return;
 }
 
@@ -255,6 +303,8 @@ void sbi()
 	}
 
 	(*result) = (*reg_a) - immediate;
+
+	setFlags(*result);
 
 	return;
 }
@@ -273,6 +323,8 @@ void mlt()
 
 	(*result) = (*reg_a) * (*reg_b);
 
+	setFlags(*result);
+
 	return;
 }
 
@@ -289,6 +341,8 @@ void mti()
 	}
 
 	(*result) = (*reg_a) * immediate;
+
+	setFlags(*result);
 
 	return;
 }
@@ -307,6 +361,8 @@ void divide()
 
 	(*result) = (*reg_a) / (*reg_b);
 
+	setFlags(*result);
+
 	return;
 }
 
@@ -324,12 +380,14 @@ void dvi()
 
 	(*result) = (*reg_a) / immediate;
 
+	setFlags(*result);
+
 	return;
 }
 
 void lod()
 {
-	int* target = getReg(fetch());
+	int *target = getReg(fetch());
 
 	if (target == NULL)
 	{
@@ -340,5 +398,68 @@ void lod()
 	currentCPU->mem->mem_ptr = *getReg(R_0);
 
 	(*target) = *getMem();
+
+	setFlags(*target);
+
+	return;
+}
+
+void ldi()
+{
+	int *target = getReg(fetch());
+
+	if (target == NULL)
+	{
+		verror("Runtime Error: Failed to load register, register not found!");
+		return;
+	}
+
+	(*target) = fetch();
+
+	setFlags(*target);
+
+	return;
+}
+
+void str()
+{
+	int *target = getReg(fetch());
+
+	if (target == NULL)
+	{
+		verror("Runtime Error: Failed to store memory, register not found!");
+		return;
+	}
+
+	currentCPU->mem->mem_ptr = *getReg(R_0);
+
+	(*getMem()) = (*target);
+
+	setFlags(*target);
+
+	return;
+}
+
+void cpy()
+{
+	int *target = getReg(fetch());
+	int *sender = getReg(fetch());
+
+	if (target == NULL)
+	{
+		verror("Runtime Error: Failed to copy register, target register not found!");
+		return;
+	}
+
+	if (sender == NULL)
+	{
+		verror("Runtime Error: Failed to copy register, sender register not found!");
+		return;
+	}
+
+	(*target) = (*sender);
+
+	setFlags(*target);
+
 	return;
 }

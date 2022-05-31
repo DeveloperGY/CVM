@@ -21,7 +21,6 @@ enum INS
 	LOD, // Load Register
 	LDI, // Load Immediate
 	STR, // Store Register
-	STI, // Store Immediate
 	CPY, // Copy Register
 
 	JMP, // Jump to instruction
