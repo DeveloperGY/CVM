@@ -17,6 +17,7 @@ struct MEM *genMEM(long size)
 	if (mem->mem == NULL)
 	{
 		printf("Error: Failed to generate VMEM, ran out of memory!\n");
+		free(mem);
 		return NULL;
 	}
 

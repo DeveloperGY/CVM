@@ -6,7 +6,7 @@
 
 enum INS
 {
-	NOP, // No Operation
+	NOP = 0, // No Operation
 	HLT, // Halt Program
 
 	ADD, // Add Registers
@@ -49,5 +49,7 @@ struct INSArr
 
 struct INSArr *genINS(long);
 void destroyINS(struct INSArr *);
+
+char loadINS(struct INSArr *, int *, long);
 
 #endif

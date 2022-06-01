@@ -17,13 +17,14 @@ struct CPU
 	int reg_2;
 	int reg_3;
 
-	int zero;
-	int negative;
+	char zero;
+	char negative;
 
 	struct INSArr *ins;
 	struct MEM *mem;
 
 	char error;
+	char running;
 };
 
 struct CPU *genCPU(long, long);
@@ -36,6 +37,10 @@ int *getMem();
 enum INS fetch();
 void execute(enum INS);
 void verror(const char *);
-void setFlags(int num);
+void setFlags(int);
+
+char loadProgram(int *, long);
+
+void runVCPU();
 
 #endif

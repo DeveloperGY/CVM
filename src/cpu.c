@@ -20,13 +20,30 @@ struct CPU *genCPU(long ins_size, long ram_size)
 	cpu->error = FALSE;
 	cpu->zero = TRUE;
 	cpu->negative = FALSE;
+	cpu->running = TRUE;
 
 	cpu->ins = genINS(ins_size);
 	cpu->mem = genMEM(ram_size);
 
-	if (cpu->ins == NULL || cpu->mem == NULL)
+	if (cpu->ins == NULL)
 	{
 		printf("Error: Failed to generate VCPU, ran out of memory!\n");
+		if (cpu->mem != NULL)
+		{
+			destroyMEM(cpu->mem);
+		}
+		free(cpu);
+		return NULL;
+	}
+
+	if (cpu->mem == NULL)
+	{
+		printf("Error: Failed to generate VCPU, ran out of memory!\n");
+		if (cpu->ins != NULL)
+		{
+			destroyINS(cpu->ins);
+		}
+		free(cpu);
 		return NULL;
 	}
 
@@ -59,7 +76,7 @@ enum INS fetch()
 		return NOP;
 	}
 	
-	enum INS instruction = currentCPU->ins->ins[currentCPU->ins->ins_ptr];
+	enum INS instruction = (enum INS)currentCPU->ins->ins[currentCPU->ins->ins_ptr];
 	currentCPU->ins->ins_ptr++;
 
 	return instruction;
@@ -73,7 +90,7 @@ void verror(const char *msg)
 		return;
 	}
 
-	printf("%s at ins: ", msg, currentCPU->ins->ins_ptr);
+	printf("%s at ins: %ld\n", msg, currentCPU->ins->ins_ptr - 1);
 	currentCPU->error = 1;
 	return;
 }
@@ -81,7 +98,9 @@ void verror(const char *msg)
 int *getReg(enum INS ins)
 {
 	if (currentCPU == NULL)
+	{
 		return NULL;
+	}
 
 	switch (ins)
 	{
@@ -131,6 +150,32 @@ void setFlags(int num)
 	}
 }
 
+char loadProgram(int *program, long size)
+{
+	if (currentCPU == NULL)
+	{
+		printf("Error: Failed to load program, no VCPU activated!\n");
+		return 0;
+	}
+
+	return loadINS(currentCPU->ins, program, size);
+}
+
+void runVCPU()
+{
+	if (currentCPU == NULL)
+	{
+		return;
+	}
+
+	while (currentCPU->running && currentCPU->ins->ins_ptr < currentCPU->ins->size)
+	{
+		execute(fetch());
+	}
+
+	return;
+}
+
 void add();
 void adi();
 void sub();
@@ -161,6 +206,18 @@ void execute(enum INS instruction)
 	if (currentCPU == NULL)
 	{
 		printf("Runtime Error: NO activated VCPU!\n");
+		return;
+	}
+
+	if (!currentCPU->running)
+	{
+		return;
+	}
+
+	if (currentCPU->error)
+	{
+		printf("Fatal Error: VCPU had an error!\n");
+		currentCPU->running = FALSE;
 		return;
 	}
 
@@ -293,6 +350,22 @@ void execute(enum INS instruction)
 			cni();
 			break;
 		}
+
+		case HLT:
+		{
+			currentCPU->running = FALSE;
+			break;
+		}
+
+		case NOP:
+		{
+			break;
+		}
+
+		default:
+		{
+			break;
+		}
 	}
 
 	return;
@@ -325,7 +398,7 @@ void adi()
 
 	if (result == NULL || reg_a == NULL)
 	{
-		verror("Runtime Error: Invalid arguments in ADD instruction!");
+		verror("Runtime Error: Invalid arguments in ADI instruction!");
 		return;
 	}
 

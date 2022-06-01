@@ -31,3 +31,31 @@ void destroyINS(struct INSArr * ins)
 	free(ins);
 	return;
 }
+
+char loadINS(struct INSArr *rom, int *ins, long size)
+{
+	if (rom == NULL)
+	{
+		printf("Error: Failed to load program instructions, invalid rom!\n");
+		return 0;
+	}
+
+	if (ins == NULL)
+	{
+		printf("Error: Failed to load program instructions, invalid instruction array!\n");
+		return 0;
+	}
+
+	if (size > rom->size)
+	{
+		printf("Error: Failed to load program instructions, invalid instruction array size!\n");
+		return 0;
+	}
+
+	for (long i = 0; i < size; i++)
+	{
+		rom->ins[i] = (enum INS)(ins[i]);
+	}
+
+	return 1;
+}
