@@ -12,9 +12,10 @@ int main(void)
 		PNT, R_0,
 		CPY, R_0, R_1,
 		CPY, R_1, R_2,
-		CPI, R_0, 5000,
+		CPI, R_2, 5000,
 		JLI, 6,
 		PNT, R_0,
+		PNT, R_1,
 		HLT
 	};
 
