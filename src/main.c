@@ -6,11 +6,14 @@ int main(void)
 	setCurrentCPU(cpu);
 
 	int arr[] = {
-		LDI, R_0,   5,
-		SBI, R_0, R_0, 1,
+		LDI, R_0, 0,
+		LDI, R_1, 1,
+		ADD, R_2, R_0, R_1,
 		PNT, R_0,
-		CPI, R_0,   0,
-		JGI,   3,
+		CPY, R_0, R_1,
+		CPY, R_1, R_2,
+		CPI, R_0, 5000,
+		JLI, 6,
 		HLT
 	};
 
