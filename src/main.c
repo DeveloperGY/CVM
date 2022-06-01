@@ -14,6 +14,7 @@ int main(void)
 		CPY, R_1, R_2,
 		CPI, R_0, 5000,
 		JLI, 6,
+		PNT, R_0,
 		HLT
 	};
 
