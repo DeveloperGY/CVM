@@ -22,4 +22,4 @@ runBuild:
 	cd ./$(out); ./$(exe);
 
 runDebug:
-	cd ./$(out); ./$(debugExe);
+	cd ./$(out); ./$(debugExe) prog;
