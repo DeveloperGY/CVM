@@ -22,6 +22,8 @@ struct INSArr *genINS(long size)
 		return NULL;
 	}
 
+	ins->ins[ins->size - 1] = HLT;
+
 	return ins;
 }
 
