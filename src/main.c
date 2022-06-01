@@ -18,7 +18,12 @@ int main(void)
 		HLT
 	};
 
-	loadProgram(arr, sizeof(arr)/sizeof(int));
+	if (!loadProgram(arr, sizeof(arr)/sizeof(int)))
+	{
+		printf("Error: Failed to load program!\n");
+		destroyCPU(cpu);
+		return -1;
+	}
 
 	runVCPU();
 
