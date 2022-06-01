@@ -76,7 +76,7 @@ enum INS fetch()
 		return NOP;
 	}
 	
-	enum INS instruction = (enum INS)currentCPU->ins->ins[currentCPU->ins->ins_ptr];
+	enum INS instruction = currentCPU->ins->ins[currentCPU->ins->ins_ptr];
 	currentCPU->ins->ins_ptr++;
 
 	return instruction;
@@ -196,10 +196,18 @@ void jez();
 void jgz();
 void jlz();
 
+void jpi();
+void jni();
+void jei();
+void jgi();
+void jli();
+
 void cmp();
 void cpi();
 void cmn();
 void cni();
+
+void pnt();
 
 void execute(enum INS instruction)
 {
@@ -327,6 +335,36 @@ void execute(enum INS instruction)
 			break;
 		}
 
+		case JPI:
+		{
+			jpi();
+			break;
+		}
+
+		case JNI:
+		{
+			jni();
+			break;
+		}
+
+		case JEI:
+		{
+			jei();
+			break;
+		}
+
+		case JGI:
+		{
+			jgi();
+			break;
+		}
+
+		case JLI:
+		{
+			jli();
+			break;
+		}
+
 		case CMP:
 		{
 			cmp();
@@ -348,6 +386,12 @@ void execute(enum INS instruction)
 		case CNI:
 		{
 			cni();
+			break;
+		}
+
+		case PNT:
+		{
+			pnt();
 			break;
 		}
 
@@ -417,7 +461,7 @@ void sub()
 
 	if (result == NULL || reg_a == NULL || reg_b == NULL)
 	{
-		verror("Runtime Error: Invalid arguments in ADD instruction!");
+		verror("Runtime Error: Invalid arguments in SUB instruction!");
 		return;
 	}
 
@@ -436,7 +480,7 @@ void sbi()
 
 	if (result == NULL || reg_a == NULL)
 	{
-		verror("Runtime Error: Invalid arguments in ADD instruction!");
+		verror("Runtime Error: Invalid arguments in SBI instruction!");
 		return;
 	}
 
@@ -455,7 +499,7 @@ void mlt()
 
 	if (result == NULL || reg_a == NULL || reg_b == NULL)
 	{
-		verror("Runtime Error: Invalid arguments in ADD instruction!");
+		verror("Runtime Error: Invalid arguments in MLT instruction!");
 		return;
 	}
 
@@ -474,7 +518,7 @@ void mti()
 
 	if (result == NULL || reg_a == NULL)
 	{
-		verror("Runtime Error: Invalid arguments in ADD instruction!");
+		verror("Runtime Error: Invalid arguments in MTI instruction!");
 		return;
 	}
 
@@ -493,7 +537,7 @@ void divide()
 
 	if (result == NULL || reg_a == NULL || reg_b == NULL)
 	{
-		verror("Runtime Error: Invalid arguments in ADD instruction!");
+		verror("Runtime Error: Invalid arguments in DIV instruction!");
 		return;
 	}
 
@@ -512,7 +556,7 @@ void dvi()
 
 	if (result == NULL || reg_a == NULL)
 	{
-		verror("Runtime Error: Invalid arguments in ADD instruction!");
+		verror("Runtime Error: Invalid arguments in DVI instruction!");
 		return;
 	}
 
@@ -604,7 +648,19 @@ void cpy()
 
 void jmp()
 {
-	int *target = getReg(R_0);
+	int *target = getReg(fetch());
+
+	if (target == NULL)
+	{
+		verror("Runtime Error: Failed to JMP, invalid register!");
+		return;
+	}
+
+	if ((*target) >= currentCPU->ins->size || (*target) < 0)
+	{
+		verror("Runtime Error: Failed to JMP, invalid address");
+		return;
+	}
 
 	currentCPU->ins->ins_ptr = (*target);
 
@@ -615,7 +671,19 @@ void jmp()
 
 void jnz()
 {
-	int *target = getReg(R_0);
+	int *target = getReg(fetch());
+
+	if (target == NULL)
+	{
+		verror("Runtime Error: Failed to JNZ, invalid register!");
+		return;
+	}
+
+	if ((*target) >= currentCPU->ins->size || (*target) < 0)
+	{
+		verror("Runtime Error: Failed to JNZ, invalid address");
+		return;
+	}
 
 	if (!currentCPU->zero)
 		currentCPU->ins->ins_ptr = (*target);
@@ -627,7 +695,19 @@ void jnz()
 
 void jez()
 {
-	int *target = getReg(R_0);
+	int *target = getReg(fetch());
+
+	if (target == NULL)
+	{
+		verror("Runtime Error: Failed to JEZ, invalid register!");
+		return;
+	}
+
+	if ((*target) >= currentCPU->ins->size || (*target) < 0)
+	{
+		verror("Runtime Error: Failed to JEZ, invalid address");
+		return;
+	}
 
 	if (currentCPU->zero)
 		currentCPU->ins->ins_ptr = (*target);
@@ -639,7 +719,19 @@ void jez()
 
 void jgz()
 {
-	int *target = getReg(R_0);
+	int *target = getReg(fetch());
+
+	if (target == NULL)
+	{
+		verror("Runtime Error: Failed to JGZ, invalid register!");
+		return;
+	}
+
+	if ((*target) >= currentCPU->ins->size || (*target) < 0)
+	{
+		verror("Runtime Error: Failed to JGZ, invalid address");
+		return;
+	}
 
 	if (!currentCPU->negative && !currentCPU->zero)
 		currentCPU->ins->ins_ptr = (*target);
@@ -651,10 +743,111 @@ void jgz()
 
 void jlz()
 {
-	int *target = getReg(R_0);
+	int *target = getReg(fetch());
+
+	if (target == NULL)
+	{
+		verror("Runtime Error: Failed to JLZ, invalid register!");
+		return;
+	}
+
+	if ((*target) >= currentCPU->ins->size || (*target) < 0)
+	{
+		verror("Runtime Error: Failed to JLZ, invalid address");
+		return;
+	}
 
 	if (currentCPU->negative)
 		currentCPU->ins->ins_ptr = (*target);
+
+	setFlags(0);
+
+	return;
+}
+
+void jpi()
+{
+	int target = fetch();
+
+	if (target >= currentCPU->ins->size || target < 0)
+	{
+		verror("Runtime Error: Failed to JPI, invalid address");
+		return;
+	}
+
+	currentCPU->ins->ins_ptr = target;
+
+	setFlags(0);
+
+	return;
+}
+
+void jni()
+{
+	int target = fetch();
+
+	if (target >= currentCPU->ins->size || target < 0)
+	{
+		verror("Runtime Error: Failed to JNI, invalid address");
+		return;
+	}
+
+	if (!currentCPU->zero)
+		currentCPU->ins->ins_ptr = target;
+
+	setFlags(0);
+
+	return;
+}
+
+void jei()
+{
+	int target = fetch();
+
+	if (target >= currentCPU->ins->size || target < 0)
+	{
+		verror("Runtime Error: Failed to JEI, invalid address");
+		return;
+	}
+
+	if (currentCPU->zero)
+		currentCPU->ins->ins_ptr = target;
+
+	setFlags(0);
+
+	return;
+}
+
+void jgi()
+{
+	int target = fetch();
+
+	if (target >= currentCPU->ins->size || target < 0)
+	{
+		verror("Runtime Error: Failed to JGI, invalid address");
+		return;
+	}
+
+	if (!currentCPU->negative && !currentCPU->zero)
+		currentCPU->ins->ins_ptr = target;
+
+	setFlags(0);
+
+	return;
+}
+
+void jli()
+{
+	int target = fetch();
+
+	if (target >= currentCPU->ins->size || target < 0)
+	{
+		verror("Runtime Error: Failed to JLI, invalid address");
+		return;
+	}
+
+	if (currentCPU->negative)
+		currentCPU->ins->ins_ptr = target;
 
 	setFlags(0);
 
@@ -734,5 +927,19 @@ void cni()
 
 	setFlags((*op_0) + op_1);
 
+	return;
+}
+
+void pnt()
+{
+	int *target = getReg(fetch());
+
+	if (target == NULL)
+	{
+		verror("Runtime Error: Failed to print register, invalid register!");
+		return;
+	}
+
+	printf("%d\n", (*target));
 	return;
 }
