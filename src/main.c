@@ -124,7 +124,28 @@ int main(int argc, char **argv)
 					printf("Error: Failed to convert file into program, ran out of memory!\n");
 					return -1;
 				}
-				
+			}
+			else if (token->str == "SUB")
+			{
+				if (!vector_push_int(program, SUB))
+				{
+					vector_destroy_int(program);
+					vector_destroy_char(programFile);
+					destroyString(token);
+					printf("Error: Failed to convert file into program, ran out of memory!\n");
+					return -1;
+				}
+			}
+			else if (token->str == "SBI")
+			{
+				if (!vector_push_int(program, SBI))
+				{
+					vector_destroy_int(program);
+					vector_destroy_char(programFile);
+					destroyString(token);
+					printf("Error: Failed to convert file into program, ran out of memory!\n");
+					return -1;
+				}
 			}
 			clearString(token);
 		}
