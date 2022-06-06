@@ -44,7 +44,7 @@ vector_destroy_##TYPE(vector_##TYPE *vec) 													\
 }																							\
 																							\
 char																						\
-vector_push_##TYPE(vector_##TYPE *vec, TYPE val)											\
+vector_push_##TYPE(vector_##TYPE *vec, TYPE val) //FIXME: EEEEE											\
 {																							\
 	if (vec->size == vec->capacity)															\
 	{																						\
