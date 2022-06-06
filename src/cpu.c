@@ -52,9 +52,16 @@ struct CPU *genCPU(long ins_size, long ram_size)
 
 void destroyCPU(struct CPU *cpu)
 {
-	destroyINS(cpu->ins);
-	destroyMEM(cpu->mem);
-	free(cpu);
+	if (cpu != NULL)
+	{
+		if (cpu->ins != NULL)
+			destroyINS(cpu->ins);
+
+		if (cpu->mem != NULL)
+			destroyMEM(cpu->mem);
+
+		free(cpu);
+	}
 	return;
 }
 
@@ -165,6 +172,7 @@ void runVCPU()
 {
 	if (currentCPU == NULL)
 	{
+		printf("Error: Failed to run program, no active CPU!\n");
 		return;
 	}
 
@@ -228,6 +236,8 @@ void execute(enum INS instruction)
 		currentCPU->running = FALSE;
 		return;
 	}
+
+	printf("%d\n", instruction);
 
 	switch (instruction)
 	{

@@ -29,14 +29,21 @@ struct INSArr *genINS(long size)
 
 void destroyINS(struct INSArr * ins)
 {
-	free(ins->ins);
-	free(ins);
+	if (ins != NULL)
+	{
+		if (ins->ins != NULL)
+		{
+			free(ins->ins);
+		}
+
+		free(ins);
+	}
 	return;
 }
 
 char loadINS(struct INSArr *rom, int *ins, long size)
 {
-	if (rom == NULL)
+	if (rom == NULL || rom->ins == NULL)
 	{
 		printf("Error: Failed to load program instructions, invalid rom!\n");
 		return 0;
@@ -56,7 +63,8 @@ char loadINS(struct INSArr *rom, int *ins, long size)
 
 	for (long i = 0; i < size; i++)
 	{
-		rom->ins[i] = (enum INS)(ins[i]);
+		int x = ins[i];
+		rom->ins[i] = (enum INS)x;
 	}
 
 	return 1;

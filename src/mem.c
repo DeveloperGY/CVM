@@ -26,7 +26,13 @@ struct MEM *genMEM(long size)
 
 void destroyMEM(struct MEM *mem)
 {
-	free(mem->mem);
-	free(mem);
+	if (mem != NULL)
+	{
+		if (mem->mem != NULL)
+			free(mem->mem);
+		
+		free(mem);
+	}
+
 	return;
 }
