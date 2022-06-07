@@ -57,14 +57,17 @@ int main(int argc, char **argv)
 
 	while (c != EOF)
 	{
-		if (c != ' ' && c != '\n' && c != '\t' && c != ',')
+		if (c != ' ' && c != '\n' && c != '\t' && c != ',' && c != '\0')
 		{
 			append(token, c);
 		}
 		else
 		{
+			// if (strcmp(token->str, "") == 0)
+			// 	continue;
+			
 			int ins = getIns(token);
-			vector_push_int(tokens, ins); // not adding to vector
+			vector_push_int(tokens, ins);
 			clearString(token);
 		}
 
@@ -73,9 +76,9 @@ int main(int argc, char **argv)
 
 	fclose(file);
 
-	// to get the last token
-	vector_push_int(tokens, getIns(token));
-	destroyString(token);
+	// // to get the last token
+	// vector_push_int(tokens, getIns(token));
+	// destroyString(token);
 
 
 	struct CPU *cpu = genCPU(tokens->size, 1024);
@@ -264,8 +267,6 @@ int getIns(struct String *token)
 		}
 		else
 		{
-			printf("Invalid Token: |%s|\n", token->str);
-			printError("Error: Invalid Token!\n", __LINE__);
 			return NOP;
 		}
 	}
