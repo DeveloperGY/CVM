@@ -237,8 +237,6 @@ void execute(enum INS instruction)
 		return;
 	}
 
-	printf("%d\n", instruction);
-
 	switch (instruction)
 	{
 		// 23 operations

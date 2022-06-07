@@ -64,7 +64,6 @@ int main(int argc, char **argv)
 		else
 		{
 			int ins = getIns(token);
-			printf("%d\n", ins);
 			vector_push_int(tokens, ins); // not adding to vector
 			clearString(token);
 		}
@@ -90,7 +89,14 @@ int main(int argc, char **argv)
 
 	setCurrentCPU(cpu);
 
-	if (!loadProgram(tokens->arr, sizeof(tokens->arr)/sizeof(int)))
+	int instructions[tokens->size];
+
+	for (int i=0; i<tokens->size; i++)
+	{
+		instructions[i] = *vector_at_int(tokens, i);
+	}
+
+	if (!loadProgram(instructions, sizeof(instructions)/sizeof(int)))
 	{
 		printError("Error: Failed to load program!\n", __LINE__);
 		vector_destroy_int(tokens);

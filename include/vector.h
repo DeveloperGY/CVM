@@ -44,7 +44,7 @@ vector_destroy_##TYPE(vector_##TYPE *vec) 													\
 }																							\
 																							\
 char																						\
-vector_push_##TYPE(vector_##TYPE *vec, TYPE val) //FIXME: EEEEE											\
+vector_push_##TYPE(vector_##TYPE *vec, TYPE val)											\
 {																							\
 	if (vec->size == vec->capacity)															\
 	{																						\
@@ -52,6 +52,7 @@ vector_push_##TYPE(vector_##TYPE *vec, TYPE val) //FIXME: EEEEE											\
 																							\
 		if(temp_arr == NULL)																\
 		{																					\
+			printf("Error: Failed to push to vector!\n");									\
 			return 0;																		\
 		}																					\
 																							\
@@ -73,7 +74,7 @@ vector_at_##TYPE(vector_##TYPE *vec, size_t index) 											\
 		return NULL;																		\
 	}																						\
 																							\
-	return &(vec->arr[index]);																\
+	return (TYPE *)&(vec->arr[index]);																\
 }
 
 #endif
